@@ -5,7 +5,7 @@ on:
     types: [opened, reopened, synchronize]
   push:
     branches:
-      - "**"
+       - main
 
 env:
   # disable keyring (https://github.com/actions/runner-images/issues/6185):
