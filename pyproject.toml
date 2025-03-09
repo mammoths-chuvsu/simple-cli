@@ -1,0 +1,73 @@
+[project]
+name = "simple-cli"
+description = "A simple CLI interpreter that supports several unix commands."
+version = "0.1.0"
+authors = [
+    { name = "Alice Strazdina", email = "itisalisas@gmail.com" },
+    { name = "Anton Poiskov", email = "poiskov2016@gmail.com" },
+    { name = "Maxim Ivanov", email = "mi4469228@yandex.ru" },
+    { name = "Matvei Smirnov", email = "vdalekesmirnov@gmail.com" },
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+black = ">=24.4.2"
+pytest = ">=7.1.2"
+mypy = ">=1.6.0"
+isort = ">=5.10.1"
+pre-commit = ">=3.7.1"
+autoflake = ">=2.0.0"
+flake8 = ">=7.1.0"
+pycodestyle = ">=2.10.0"
+flake8-docstrings = ">=1.6.0"
+pep8-naming = ">=0.13.2"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ["py312", "py313"]
+include = '\.pyi?$'
+preview = true
+
+[tool.isort]
+profile = "black"
+line_length = 88
+py_version = 312
+multi_line_output = 3
+include_trailing_comma = true
+
+[tool.autoflake]
+in-place = true
+ignore-init-module-imports = true
+remove-all-unused-imports = true
+remove-unused-variables = true
+expand-star-imports = true
+recursive = true
+
+[tool.mypy]
+pretty = true
+no_implicit_optional = true
+namespace_packages = true
+show_error_codes = true
+python_version = "3.12"
+
+[tool.semantic_release]
+# for default values check:
+# https://github.com/python-semantic-release/python-semantic-release/blob/v7.32.2/semantic_release/defaults.cfg
+
+version_source = "tag_only"
+branch = "main"
+
+# configure types which should trigger minor and patch version bumps respectively
+# (note that they must be a subset of the configured allowed types):
+parser_angular_allowed_types = "build,chore,ci,docs,feat,fix,perf,style,refactor,test"
+parser_angular_minor_types = "feat"
+parser_angular_patch_types = "fix,perf"
