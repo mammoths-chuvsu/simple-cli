@@ -23,14 +23,6 @@ class Parser(BaseModel):
     """Parser class to tokenize and parse command line strings."""
 
     def _tokenize(self, command: str) -> ParsedCommand:
-        """Tokenize a command string into a ParsedCommand object.
-
-        Args:
-            command (str): The command line string to be tokenized.
-
-        Returns:
-            ParsedCommand: An object containing the command name and arguments.
-        """
         args: List[str] = shlex.split(command)
         name: str = args.pop(0)
         return ParsedCommand(name=name, args=args)
