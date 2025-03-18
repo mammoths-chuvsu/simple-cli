@@ -19,11 +19,12 @@ class WcCommand(Command):
             int: 0 on success, 1 on file handling errors
         """
         try:
-            with open(parsed_command.args[0], "r") as f:
+            file_path = parsed_command.args[0]
+            with open(file_path, "r") as f:
                 content = f.read()
-                lines = len(content.split("\n"))
+                lines = content.count("\n")
                 words = len(content.split())
-                bytes = os.path.getsize(parsed_command.args[0])
+                bytes = os.path.getsize(file_path)
                 print(f"{lines} {words} {bytes}")
             return 0
         except Exception as e:
