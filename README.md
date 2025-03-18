@@ -12,6 +12,11 @@ To install the project, you need to have [Poetry](https://python-poetry.org/docs
 ```bash
 poetry install
 ```
+2. Run interpretator:
+```bash
+$(poetry env activate)
+python simple_cli/main.py
+```
 
 ### For Developers
 If you are planning to develop or contribute to this project, install the development dependencies as well:

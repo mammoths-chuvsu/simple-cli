@@ -21,7 +21,7 @@ class DefaultCommand(Command):
         """
         try:
             result = subprocess.run(
-                [parsed_command.command] + parsed_command.args,
+                [parsed_command.name] + parsed_command.args,
                 capture_output=True,
                 text=True,
             )
