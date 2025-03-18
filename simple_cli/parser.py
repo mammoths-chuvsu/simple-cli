@@ -31,9 +31,7 @@ class Parser(BaseModel):
         Returns:
             ParsedCommand: An object containing the command name and arguments.
         """
-        # Split the command string while considering quotes
         args: List[str] = shlex.split(command)
-        # Extract the command name from the arguments list
         name: str = args.pop(0)
         return ParsedCommand(name=name, args=args)
 
