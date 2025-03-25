@@ -1,7 +1,7 @@
 """Exit command implementation for terminating the interpreter."""
 
 from simple_cli.commands.command import Command
-from simple_cli.exceptions.exit_exception import ExitException
+from simple_cli.exceptions.exit_exception import ExitError
 
 
 class ExitCommand(Command):
@@ -19,4 +19,4 @@ class ExitCommand(Command):
         Returns:
             int: Never actually returns (method raises instead)
         """
-        raise ExitException()
+        raise ExitError()

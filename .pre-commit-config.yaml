@@ -40,14 +40,14 @@ repos:
         pass_filenames: false
         language: system
         files: '\.py$'
-  # - repo: local
-  #   hooks:
-  #     - id: pytest
-  #       name: Pytest
-  #       entry: poetry run pytest tests/
-  #       pass_filenames: false
-  #       language: system
-  #       files: '\.py$'
+  - repo: local
+    hooks:
+      - id: pytest
+        name: Pytest
+        entry: poetry run pytest tests/
+        pass_filenames: false
+        language: system
+        files: '\.py$'
   - repo: local
     hooks:
       - id: poetry
