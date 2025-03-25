@@ -8,7 +8,7 @@ from simple_cli.commands.command import Command
 class PwdCommand(Command):
     """Command implementation for printing working directory."""
 
-    def execute(self, _) -> int:
+    def execute(self, _parsed_command, _stdin, stdout) -> int:
         """Execute pwd command.
 
         Args:
@@ -17,5 +17,5 @@ class PwdCommand(Command):
         Returns:
             int: Always returns 0 (success)
         """
-        print(os.getcwd())
+        print(os.getcwd(), file=stdout)
         return 0

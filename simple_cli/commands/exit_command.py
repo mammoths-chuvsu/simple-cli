@@ -7,7 +7,7 @@ from simple_cli.exceptions.exit_exception import ExitError
 class ExitCommand(Command):
     """Command implementation for terminating the interpreter."""
 
-    def execute(self, _) -> int:
+    def execute(self, _parsed_command, _stdin, _stdout) -> int:
         """Execute exit command.
 
         Args:
