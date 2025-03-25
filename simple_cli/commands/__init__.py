@@ -1,5 +1,6 @@
 """Package containing all command implementations for the CLI interpreter."""
 
+from .assignment_command import AssignmentCommand
 from .cat_command import CatCommand
 from .command import Command
 from .default_command import DefaultCommand
@@ -16,4 +17,5 @@ __all__ = [
     "PwdCommand",
     "ExitCommand",
     "DefaultCommand",
+    "AssignmentCommand",
 ]
