@@ -12,12 +12,12 @@ from simple_cli.commands import (
     PwdCommand,
     WcCommand,
 )
-from simple_cli.exceptions.exit_exception import ExitException
+from simple_cli.exceptions.exit_exception import ExitError
 
 
 class MockParsedCommand:
     def __init__(self, command: str, args: list):
-        self.command = command
+        self.name = command
         self.args = args
 
 
@@ -71,7 +71,7 @@ def test_pwd_command(capsys):
 def test_exit_command():
     cmd = ExitCommand()
     parsed = MockParsedCommand("exit", [])
-    with pytest.raises(ExitException):
+    with pytest.raises(ExitError):
         cmd.execute(parsed)
 
 

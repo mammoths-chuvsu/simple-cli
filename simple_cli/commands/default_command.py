@@ -28,5 +28,5 @@ class DefaultCommand(Command):
             print(result.stdout)
             return result.returncode
         except FileNotFoundError:
-            print(f"Command not found: {parsed_command.command}")
+            print(f"Command not found: {parsed_command.name}")
             return 127
