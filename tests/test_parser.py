@@ -1,6 +1,7 @@
 import pytest
 
 from simple_cli.environment import Environment
+from simple_cli.exceptions.empty_command_error import EmptyCommandError
 from simple_cli.parser import ParsedCommand, ParsedCommands, Parser
 
 
@@ -152,13 +153,13 @@ def test_parse_empty_command_between_pipes(parser, env):
 
 def test_parse_pipeline_with_empty_string(parser, env):
     command = ""
-    with pytest.raises(ValueError):
+    with pytest.raises(EmptyCommandError):
         parser.parse(command, env)
 
 
 def test_parse_pipeline_with_only_spaces(parser, env):
     command = "   "
-    with pytest.raises(ValueError):
+    with pytest.raises(EmptyCommandError):
         parser.parse(command, env)
 
 

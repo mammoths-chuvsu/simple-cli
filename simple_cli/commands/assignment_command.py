@@ -19,7 +19,7 @@ class AssignmentCommand(Command):
         """
         self._env = env
 
-    def execute(self, parsed_command) -> int:
+    def execute(self, parsed_command, _stdin, _stdout) -> int:
         """Execute the variable assignment operation.
 
         Args:

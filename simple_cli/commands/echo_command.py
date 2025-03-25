@@ -6,7 +6,7 @@ from simple_cli.commands.command import Command
 class EchoCommand(Command):
     """Command implementation for echoing arguments to stdout."""
 
-    def execute(self, parsed_command) -> int:
+    def execute(self, parsed_command, _stdin, stdout) -> int:
         """Execute echo command.
 
         Args:
@@ -16,5 +16,5 @@ class EchoCommand(Command):
         Returns:
             int: Always returns 0 (success)
         """
-        print(" ".join(parsed_command.args))
+        print(" ".join(parsed_command.args), file=stdout)
         return 0

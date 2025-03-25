@@ -8,7 +8,7 @@ from simple_cli.commands.command import Command
 class WcCommand(Command):
     """Command implementation for word count statistics."""
 
-    def execute(self, parsed_command) -> int:
+    def execute(self, parsed_command, _stdin, stdout) -> int:
         """Execute wc command.
 
         Args:
@@ -25,8 +25,8 @@ class WcCommand(Command):
                 lines = content.count("\n")
                 words = len(content.split())
                 bytes = os.path.getsize(file_path)
-                print(f"{lines} {words} {bytes}")
+                print(f"{lines} {words} {bytes}", file=stdout)
             return 0
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"Error: {e}", file=stdout)
             return 1

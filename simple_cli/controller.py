@@ -1,6 +1,9 @@
 """Controller class implementation."""
 
+import traceback
+
 from simple_cli.environment import Environment
+from simple_cli.exceptions.empty_command_error import EmptyCommandError
 from simple_cli.exceptions.exit_exception import ExitError
 from simple_cli.executor import Executor
 from simple_cli.parser import Parser
@@ -28,6 +31,12 @@ class Controller:
                 self._execute_command(command)
             except ExitError:
                 break
+            except (KeyboardInterrupt, EOFError):
+                print()
+            except EmptyCommandError:
+                pass
+            except Exception:
+                traceback.print_exc()
 
     def _execute_command(self, command: str) -> int:
         """Parse and execute a given command.
