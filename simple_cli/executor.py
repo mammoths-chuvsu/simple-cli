@@ -1,6 +1,7 @@
 """Executor class implementation."""
 
 from simple_cli.commands.command_storage import CommandStorage
+from simple_cli.environment import Environment
 from simple_cli.parser import ParsedCommands
 
 
@@ -12,9 +13,9 @@ class Executor:
     command implementations from CommandStorage.
     """
 
-    def __init__(self):
+    def __init__(self, env: Environment):
         """Initialize the Executor with a CommandStorage instance."""
-        self._command_storage = CommandStorage()
+        self._command_storage = CommandStorage(env)
 
     def execute(self, parsed_commands: ParsedCommands) -> int:
         """Execute a sequence of parsed commands.
