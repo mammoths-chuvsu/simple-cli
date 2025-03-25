@@ -8,7 +8,7 @@ from simple_cli.commands.command import Command
 class DefaultCommand(Command):
     """Fallback command implementation for external program execution."""
 
-    def execute(self, parsed_command) -> int:
+    def execute(self, parsed_command, stdin, stdout) -> int:
         """Execute external command via subprocess.
 
         Args:
@@ -22,11 +22,11 @@ class DefaultCommand(Command):
         try:
             result = subprocess.run(
                 [parsed_command.name] + parsed_command.args,
-                capture_output=True,
+                stdin=stdin,
+                stdout=stdout,
                 text=True,
             )
-            print(result.stdout)
             return result.returncode
         except FileNotFoundError:
-            print(f"Command not found: {parsed_command.name}")
+            print(f"Command not found: {parsed_command.name}", file=stdout)
             return 127

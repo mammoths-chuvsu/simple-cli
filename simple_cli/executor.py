@@ -1,5 +1,8 @@
 """Executor class implementation."""
 
+import os
+import sys
+
 from simple_cli.commands.command_storage import CommandStorage
 from simple_cli.environment import Environment
 from simple_cli.parser import ParsedCommands
@@ -28,7 +31,21 @@ class Executor:
             int: The result code from the last executed command.
         """
         result_code: int = 0
-        for command in parsed_commands.command_seq:
+        prev_stdin = None
+        num_commands = len(parsed_commands.command_seq)
+
+        for idx, command in enumerate(parsed_commands.command_seq):
             command_executor = self._command_storage.get_command(command.name)
-            result_code = command_executor.execute(command)
+
+            stdin_pipe, stdout_pipe = (
+                os.pipe() if idx < num_commands - 1 else (None, None)
+            )
+            stdin = os.fdopen(prev_stdin, "r") if prev_stdin is not None else sys.stdin
+            stdout = (
+                os.fdopen(stdout_pipe, "w") if stdout_pipe is not None else sys.stdout
+            )
+
+            result_code = command_executor.execute(command, stdin, stdout)
+
+            prev_stdin = stdin_pipe
         return result_code
