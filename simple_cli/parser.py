@@ -7,6 +7,7 @@ from typing import List
 from pydantic import BaseModel
 
 from simple_cli.environment import Environment
+from simple_cli.exceptions.empty_command_error import EmptyCommandError
 
 
 class ParsedCommand(BaseModel):
@@ -52,7 +53,7 @@ class Parser(BaseModel):
         tokens = shlex.split(self._substitute(line, env))
 
         if not tokens:
-            raise ValueError("Input command line string is empty.")
+            raise EmptyCommandError()
 
         command_seq: List[ParsedCommand] = []
         command_tokens: List[str] = []

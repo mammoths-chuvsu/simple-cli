@@ -6,7 +6,7 @@ from simple_cli.commands.command import Command
 class CatCommand(Command):
     """Command implementation for printing file contents."""
 
-    def execute(self, parsed_command) -> int:
+    def execute(self, parsed_command, _stdin, stdout) -> int:
         """Execute cat command.
 
         Args:
@@ -19,8 +19,8 @@ class CatCommand(Command):
         """
         try:
             with open(parsed_command.args[0], "r") as f:
-                print(f.read())
+                print(f.read(), file=stdout)
             return 0
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"Error: {e}", file=stdout)
             return 1
