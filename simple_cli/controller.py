@@ -1,5 +1,6 @@
 """Controller class implementation."""
 
+from simple_cli.environment import Environment
 from simple_cli.exceptions.exit_exception import ExitError
 from simple_cli.executor import Executor
 from simple_cli.parser import Parser
@@ -9,9 +10,10 @@ class Controller:
     """The Controller class orchestrates the parsing and execution."""
 
     def __init__(self):
-        """Initialize the Controller with Parser and Executor instance."""
+        """Initialize the Controller with Environment, Parser and Executor instance."""
+        self._env = Environment()
         self._parser = Parser()
-        self._executor = Executor()
+        self._executor = Executor(self._env)
 
     def run(self):
         """Run main loop of program.
@@ -36,5 +38,5 @@ class Controller:
         Returns:
             int: The result code from the executed command.
         """
-        parsed = self._parser.parse(command)
+        parsed = self._parser.parse(command, self._env)
         return self._executor.execute(parsed)

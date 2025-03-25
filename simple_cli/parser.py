@@ -1,9 +1,12 @@
 """Parser class implementation."""
 
+import re
 import shlex
 from typing import List
 
 from pydantic import BaseModel
+
+from simple_cli.environment import Environment
 
 
 class ParsedCommand(BaseModel):
@@ -22,6 +25,11 @@ class ParsedCommands(BaseModel):
 class Parser(BaseModel):
     """Parser class to tokenize and parse command line strings."""
 
+    def _substitute(self, line: str, env: Environment) -> str:
+        return re.sub(
+            r"\$([A-Za-z_][A-Za-z0-9_]*)", lambda m: env.get(m.group(1)), line
+        )
+
     def _append_command(
         self, command_seq: List[ParsedCommand], command_tokens: List[str]
     ):
@@ -32,7 +40,7 @@ class Parser(BaseModel):
             )
         )
 
-    def parse(self, line: str) -> ParsedCommands:
+    def parse(self, line: str, env: Environment) -> ParsedCommands:
         """Parse a line of command string into ParsedCommands.
 
         Args:
@@ -41,21 +49,38 @@ class Parser(BaseModel):
         Returns:
             ParsedCommands: An object containing a sequence of parsed commands.
         """
-        tokens = shlex.split(line)
+        tokens = shlex.split(self._substitute(line, env))
 
         if not tokens:
             raise ValueError("Input command line string is empty.")
 
         command_seq: List[ParsedCommand] = []
         command_tokens: List[str] = []
+        is_assignment_mode = True
 
         for token in tokens:
+            if is_assignment_mode and "=" in token and token.count("=") == 1:
+                var, value = token.split("=", 1)
+                if token.startswith("="):
+                    raise ValueError(f"Invalid assignment: {token}")
+                var, value = token.split("=", 1)
+                if not var.isidentifier():
+                    raise ValueError(f"Invalid variable name: {var}")
+                if command_tokens:
+                    self._append_command(command_seq, command_tokens)
+                    command_tokens = []
+                command_tokens = ["=", var, value]
+                continue
+            is_assignment_mode = False
             if token == "|":
                 if not command_tokens:
                     raise ValueError("Pipe encountered without preceding command.")
                 self._append_command(command_seq, command_tokens)
                 command_tokens = []
+                is_assignment_mode = True
             else:
+                if command_tokens and command_tokens[0] == "=":
+                    self._append_command(command_seq, command_tokens)
                 command_tokens.append(token)
 
         if not command_tokens:
