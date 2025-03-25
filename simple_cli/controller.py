@@ -1,6 +1,6 @@
 """Controller class implementation."""
 
-from simple_cli.exceptions.exit_exception import ExitException
+from simple_cli.exceptions.exit_exception import ExitError
 from simple_cli.executor import Executor
 from simple_cli.parser import Parser
 
@@ -24,7 +24,7 @@ class Controller:
             try:
                 command = input(">>> ")
                 self._execute_command(command)
-            except ExitException:
+            except ExitError:
                 break
 
     def _execute_command(self, command: str) -> int:

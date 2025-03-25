@@ -22,10 +22,15 @@ class ParsedCommands(BaseModel):
 class Parser(BaseModel):
     """Parser class to tokenize and parse command line strings."""
 
-    def _tokenize(self, command: str) -> ParsedCommand:
-        args: List[str] = shlex.split(command)
-        name: str = args.pop(0)
-        return ParsedCommand(name=name, args=args)
+    def _append_command(
+        self, command_seq: List[ParsedCommand], command_tokens: List[str]
+    ):
+        command_seq.append(
+            ParsedCommand(
+                name=command_tokens[0],
+                args=command_tokens[1:],
+            )
+        )
 
     def parse(self, line: str) -> ParsedCommands:
         """Parse a line of command string into ParsedCommands.
@@ -36,5 +41,26 @@ class Parser(BaseModel):
         Returns:
             ParsedCommands: An object containing a sequence of parsed commands.
         """
-        command: ParsedCommand = self._tokenize(line)
-        return ParsedCommands(command_seq=[command])
+        tokens = shlex.split(line)
+
+        if not tokens:
+            raise ValueError("Input command line string is empty.")
+
+        command_seq: List[ParsedCommand] = []
+        command_tokens: List[str] = []
+
+        for token in tokens:
+            if token == "|":
+                if not command_tokens:
+                    raise ValueError("Pipe encountered without preceding command.")
+                self._append_command(command_seq, command_tokens)
+                command_tokens = []
+            else:
+                command_tokens.append(token)
+
+        if not command_tokens:
+            raise ValueError("Pipeline ends with a pipe without a following command.")
+
+        self._append_command(command_seq, command_tokens)
+
+        return ParsedCommands(command_seq=command_seq)
