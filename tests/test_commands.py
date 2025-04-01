@@ -11,6 +11,7 @@ from simple_cli.commands import (
     DefaultCommand,
     EchoCommand,
     ExitCommand,
+    GrepCommand,
     PwdCommand,
     WcCommand,
 )
@@ -97,3 +98,150 @@ def test_default_command_not_found(capsys):
     stdin = os.fdopen(in_pipe, "r")
     stdout.close()
     assert "Command not found" in stdin.read().strip()
+
+
+def test_grep_basic_pattern(tmp_path, capsys):
+    file = tmp_path / "test.txt"
+    file.write_text("apple\nbanana\ngrape\napple pie")
+    parsed = MockParsedCommand("grep", ["apple", str(file)])
+    cmd = GrepCommand()
+    exit_code = cmd.execute(parsed, None, sys.stdout)
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert captured.out == "apple\n--\napple pie"
+
+
+def test_grep_case_insensitive(tmp_path, capsys):
+    file = tmp_path / "test.txt"
+    file.write_text("Apple\nBANANA\ngrape\nAPPLE PIE")
+    parsed = MockParsedCommand("grep", ["-i", "apple", str(file)])
+    cmd = GrepCommand()
+    exit_code = cmd.execute(parsed, None, sys.stdout)
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert captured.out == "Apple\n--\nAPPLE PIE"
+
+
+def test_grep_whole_word(tmp_path, capsys):
+    file = tmp_path / "test.txt"
+    file.write_text("cat\ncategory\nconcatenate")
+    parsed = MockParsedCommand("grep", ["-w", "cat", str(file)])
+    cmd = GrepCommand()
+    exit_code = cmd.execute(parsed, None, sys.stdout)
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert captured.out == "cat\n"
+
+
+def test_grep_after_context(tmp_path, capsys):
+    file = tmp_path / "test.txt"
+    content = "line1\nmatch1\nline2\nline3\nmatch2\nline4"
+    file.write_text(content)
+    parsed = MockParsedCommand("grep", ["-A", "1", "match", str(file)])
+    cmd = GrepCommand()
+    exit_code = cmd.execute(parsed, None, sys.stdout)
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert captured.out == "match1\nline2\n--\nmatch2\nline4"
+
+
+def test_grep_after_context_overlapping(tmp_path, capsys):
+    file = tmp_path / "test.txt"
+    content = "0\nmatch1\n2\nmatch2\n4\n5"
+    file.write_text(content)
+    parsed = MockParsedCommand("grep", ["-A", "2", "match", str(file)])
+    cmd = GrepCommand()
+    exit_code = cmd.execute(parsed, None, sys.stdout)
+    captured = capsys.readouterr()
+    expected = "match1\n2\nmatch2\n4\n5"
+    assert exit_code == 0
+    assert captured.out == expected
+
+
+def test_grep_invalid_regex(tmp_path, capsys):
+    file = tmp_path / "test.txt"
+    file.write_text("test")
+    parsed = MockParsedCommand("grep", ["a(b", str(file)])
+    cmd = GrepCommand()
+    exit_code = cmd.execute(parsed, None, sys.stdout)
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "Regex error" in captured.out
+
+
+def test_grep_invalid_after_context_value(capsys):
+    parsed = MockParsedCommand("grep", ["-A", "two", "pattern", "file.txt"])
+    cmd = GrepCommand()
+    exit_code = cmd.execute(parsed, None, sys.stdout)
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "Error" in captured.out
+
+
+def test_grep_after_context_merged_intervals(tmp_path, capsys):
+    content = ["match1", "line1", "line2", "match2", "line4", "line5"]
+    file = tmp_path / "test.txt"
+    file.write_text("\n".join(content))
+    parsed = MockParsedCommand("grep", ["-A", "2", "match", str(file)])
+    cmd = GrepCommand()
+    exit_code = cmd.execute(parsed, None, sys.stdout)
+    captured = capsys.readouterr()
+    expected = "match1\nline1\nline2\nmatch2\nline4\nline5"
+    assert exit_code == 0
+    assert captured.out == expected
+
+
+def test_grep_after_context_separate_blocks(tmp_path, capsys):
+    content = ["match1", "line1", "line2", "line3", "match2", "line5"]
+    file = tmp_path / "test.txt"
+    file.write_text("\n".join(content))
+    parsed = MockParsedCommand("grep", ["-A", "1", "match", str(file)])
+    cmd = GrepCommand()
+    exit_code = cmd.execute(parsed, None, sys.stdout)
+    captured = capsys.readouterr()
+    expected = "match1\nline1\n--\nmatch2\nline5"
+    assert exit_code == 0
+    assert captured.out == expected
+
+
+def test_grep_file_not_found(capsys):
+    parsed = MockParsedCommand("grep", ["pattern", "nonexistent.txt"])
+    cmd = GrepCommand()
+    exit_code = cmd.execute(parsed, None, sys.stdout)
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "File error" in captured.out
+
+
+def test_grep_empty_file(tmp_path, capsys):
+    file = tmp_path / "empty.txt"
+    file.write_text("")
+    parsed = MockParsedCommand("grep", ["pattern", str(file)])
+    cmd = GrepCommand()
+    exit_code = cmd.execute(parsed, None, sys.stdout)
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert captured.out == ""
+
+
+def test_grep_pattern_not_found(tmp_path, capsys):
+    file = tmp_path / "test.txt"
+    file.write_text("line1\nline2")
+    parsed = MockParsedCommand("grep", ["notfound", str(file)])
+    cmd = GrepCommand()
+    exit_code = cmd.execute(parsed, None, sys.stdout)
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert captured.out == ""
+
+
+def test_grep_after_context_exceeds_file(tmp_path, capsys):
+    content = ["line1", "match", "line3"]
+    file = tmp_path / "test.txt"
+    file.write_text("\n".join(content))
+    parsed = MockParsedCommand("grep", ["-A", "5", "match", str(file)])
+    cmd = GrepCommand()
+    exit_code = cmd.execute(parsed, None, sys.stdout)
+    captured = capsys.readouterr()
+    assert exit_code == 0
+    assert captured.out == "match\nline3"
