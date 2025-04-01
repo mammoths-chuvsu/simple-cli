@@ -6,6 +6,7 @@ from .command import Command
 from .default_command import DefaultCommand
 from .echo_command import EchoCommand
 from .exit_command import ExitCommand
+from .grep_command import GrepCommand
 from .pwd_command import PwdCommand
 from .wc_command import WcCommand
 
@@ -18,4 +19,5 @@ __all__ = [
     "ExitCommand",
     "DefaultCommand",
     "AssignmentCommand",
+    "GrepCommand",
 ]
