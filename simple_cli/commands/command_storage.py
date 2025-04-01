@@ -7,6 +7,7 @@ from simple_cli.commands import (
     DefaultCommand,
     EchoCommand,
     ExitCommand,
+    GrepCommand,
     PwdCommand,
     WcCommand,
 )
@@ -27,6 +28,7 @@ class CommandStorage:
             "cat": CatCommand(),
             "wc": WcCommand(),
             "pwd": PwdCommand(),
+            "grep": GrepCommand(),
             "exit": ExitCommand(),
             "=": AssignmentCommand(env),
         }
