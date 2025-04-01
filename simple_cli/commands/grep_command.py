@@ -83,13 +83,15 @@ class GrepCommand(Command):
         try:
             regex = re.compile(pattern, flags)
         except re.error as e:
-            raise ValueError(f"Regex error: {e}") from e
+            print(f"Regex error: {str(e)}", file=stdout)
+            return 1
 
         try:
             with open(args.file, "r", encoding="utf-8") as f:
                 lines = f.readlines()
         except IOError as e:
-            raise IOError(f"File error: {e}") from e
+            print(f"File error: {str(e)}", file=stdout)
+            return 1
 
         matches = [idx for idx, line in enumerate(lines) if regex.search(line)]
         intervals = [(idx, idx + args.after_context) for idx in matches]
