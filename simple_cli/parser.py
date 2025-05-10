@@ -27,11 +27,6 @@ class Parser(BaseModel):
     """Parser class to tokenize and parse command line strings."""
 
     def _substitute(self, line: str, env: Environment) -> str:
-        return re.sub(
-            r"\$([A-Za-z_][A-Za-z0-9_]*)", lambda m: env.get(m.group(1)), line
-        )
-
-    def _substitute(self, line: str, env: Environment) -> str:
         # Replace shell-style $VAR_NAME with values from the environment
         return re.sub(
             r"\$([A-Za-z_][A-Za-z0-9_]*)", lambda m: env.get(m.group(1)), line
