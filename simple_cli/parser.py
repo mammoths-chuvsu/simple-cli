@@ -31,6 +31,12 @@ class Parser(BaseModel):
             r"\$([A-Za-z_][A-Za-z0-9_]*)", lambda m: env.get(m.group(1)), line
         )
 
+    def _substitute(self, line: str, env: Environment) -> str:
+        # Replace shell-style $VAR_NAME with values from the environment
+        return re.sub(
+            r"\$([A-Za-z_][A-Za-z0-9_]*)", lambda m: env.get(m.group(1)), line
+        )
+
     def _append_command(
         self, command_seq: List[ParsedCommand], command_tokens: List[str]
     ):
@@ -50,6 +56,7 @@ class Parser(BaseModel):
         Returns:
             ParsedCommands: An object containing a sequence of parsed commands.
         """
+        # Tokenize and substitute environment variables
         tokens = shlex.split(self._substitute(line, env))
 
         if not tokens:
@@ -60,26 +67,31 @@ class Parser(BaseModel):
         is_assignment_mode = True
 
         for token in tokens:
+            # Detect variable assignment of the form VAR=value (only once =)
             if is_assignment_mode and "=" in token and token.count("=") == 1:
                 var, value = token.split("=", 1)
                 if token.startswith("="):
                     raise ValueError(f"Invalid assignment: {token}")
-                var, value = token.split("=", 1)
                 if not var.isidentifier():
                     raise ValueError(f"Invalid variable name: {var}")
+                # Add any previously collected command before new assignment
                 if command_tokens:
                     self._append_command(command_seq, command_tokens)
                     command_tokens = []
                 command_tokens = ["=", var, value]
                 continue
+
             is_assignment_mode = False
+
             if token == "|":
+                # Ensure a valid command exists before piping
                 if not command_tokens:
                     raise ValueError("Pipe encountered without preceding command.")
                 self._append_command(command_seq, command_tokens)
                 command_tokens = []
                 is_assignment_mode = True
             else:
+                # Commit assignment command if a regular token appears after it
                 if command_tokens and command_tokens[0] == "=":
                     self._append_command(command_seq, command_tokens)
                 command_tokens.append(token)

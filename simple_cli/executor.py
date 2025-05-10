@@ -34,18 +34,24 @@ class Executor:
         prev_stdin = None
         num_commands = len(parsed_commands.command_seq)
 
-        for idx, command in enumerate(parsed_commands.command_seq):
-            command_executor = self._command_storage.get_command(command.name)
+    for idx, command in enumerate(parsed_commands.command_seq):
+        command_executor = self._command_storage.get_command(command.name)
 
-            stdin_pipe, stdout_pipe = (
-                os.pipe() if idx < num_commands - 1 else (None, None)
-            )
-            stdin = os.fdopen(prev_stdin, "r") if prev_stdin is not None else sys.stdin
-            stdout = (
-                os.fdopen(stdout_pipe, "w") if stdout_pipe is not None else sys.stdout
-            )
+        # Create a pipe if there is a next command (i.e., setting up a pipeline)
+        stdin_pipe, stdout_pipe = (
+            os.pipe() if idx < num_commands - 1 else (None, None)
+        )
 
-            result_code = command_executor.execute(command, stdin, stdout)
+        # Use previous stdout as stdin if available (from previous pipe output)
+        stdin = os.fdopen(prev_stdin, "r") if prev_stdin is not None else sys.stdin
 
-            prev_stdin = stdin_pipe
+        # If this is not the last command, set up its stdout to a pipe
+        stdout = (
+            os.fdopen(stdout_pipe, "w") if stdout_pipe is not None else sys.stdout
+        )
+        result_code = command_executor.execute(command, stdin, stdout)
+
+        # Save current input pipe to be used as input for next command
+        prev_stdin = stdin_pipe
+
         return result_code
