@@ -14,8 +14,7 @@ poetry install
 ```
 2. Run interpretator:
 ```bash
-$(poetry env activate)
-python simple_cli/main.py
+poetry run python simple_cli/main.py
 ```
 
 ### For Developers
