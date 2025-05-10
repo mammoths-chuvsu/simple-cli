@@ -48,11 +48,13 @@ class GrepCommand(Command):
         return args
 
     def _merge_intervals(self, intervals):
+        # Merge overlapping or adjacent intervals (for match + after-context)
         if not intervals:
             return []
         sorted_intervals = sorted(intervals, key=lambda x: x[0])
         merged = [sorted_intervals[0]]
         for current in sorted_intervals[1:]:
+            # Extend interval if overlapping or directly adjacent
             last = merged[-1]
             if current[0] <= last[1] + 1:
                 merged[-1] = (last[0], max(last[1], current[1]))
@@ -93,8 +95,13 @@ class GrepCommand(Command):
             print(f"File error: {str(e)}", file=stdout)
             return 1
 
+        # Find line numbers where matches occur
         matches = [idx for idx, line in enumerate(lines) if regex.search(line)]
+
+        # Build intervals covering matched lines and after-context lines
         intervals = [(idx, idx + args.after_context) for idx in matches]
+
+        # Merge potentially overlapping intervals to avoid duplicate lines
         merged = self._merge_intervals(intervals)
 
         output_lines = []
@@ -103,7 +110,9 @@ class GrepCommand(Command):
             if first_interval:
                 first_interval = False
             else:
+                # Separator between disjoint match regions
                 output_lines.append("--\n")
+            # Avoid index out-of-bounds
             start = max(0, start)
             end = min(len(lines) - 1, end)
             output_lines.extend(lines[i] for i in range(start, end + 1))
