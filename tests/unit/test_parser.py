@@ -250,3 +250,15 @@ def test_parse_assignment_after_command(parser, env):
     )
     result = parser.parse(command, env)
     assert result == expected
+
+def test_parse_cd_command(parser, env):
+    command = "cd /home/user"
+    expected = ParsedCommand(name="cd", args=["/home/user"])
+    result = parser.parse(command, env).command_seq[0]
+    assert result == expected
+
+def test_parse_ls_command(parser, env):
+    command = "ls /home/user"
+    expected = ParsedCommand(name="ls", args=["/home/user"])
+    result = parser.parse(command, env).command_seq[0]
+    assert result == expected

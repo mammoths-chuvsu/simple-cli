@@ -1,5 +1,6 @@
 """Controller class implementation."""
 
+import os
 import traceback
 
 from simple_cli.environment import Environment
@@ -17,6 +18,7 @@ class Controller:
         self._env = Environment()
         self._parser = Parser()
         self._executor = Executor(self._env)
+        self._current_dir = os.getcwd()
 
     def run(self):
         """Run main loop of program.
@@ -48,4 +50,7 @@ class Controller:
             int: The result code from the executed command.
         """
         parsed = self._parser.parse(command, self._env)
+        # Обновление текущей директории, если команда cd
+        if parsed.command_seq[0].name == "cd":
+            self._current_dir = os.getcwd()
         return self._executor.execute(parsed)

@@ -9,6 +9,9 @@ from .exit_command import ExitCommand
 from .grep_command import GrepCommand
 from .pwd_command import PwdCommand
 from .wc_command import WcCommand
+from .cd_command import CdCommand
+from .ls_command import LsCommand
+
 
 __all__ = [
     "Command",
@@ -20,4 +23,6 @@ __all__ = [
     "DefaultCommand",
     "AssignmentCommand",
     "GrepCommand",
+    "CdCommand",
+    "LsCommand",
 ]

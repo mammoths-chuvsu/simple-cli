@@ -3,6 +3,11 @@
 import os
 import subprocess
 import sys
+import pytest
+from simple_cli.commands.cd_command import CdCommand
+from simple_cli.environment import Environment
+from io import StringIO
+from simple_cli.commands.ls_command import LsCommand
 
 import pytest
 
@@ -245,3 +250,49 @@ def test_grep_after_context_exceeds_file(tmp_path, capsys):
     captured = capsys.readouterr()
     assert exit_code == 0
     assert captured.out == "match\nline3"
+
+def test_cd_no_argument():
+    env = Environment()
+    cmd = CdCommand()
+    parsed = MockParsedCommand("cd", [])
+    cmd.execute(parsed, None, StringIO())
+    assert os.getcwd() == os.path.expanduser("~")
+
+def test_cd_with_argument(tmp_path):
+    env = Environment()
+    cmd = CdCommand()
+    parsed = MockParsedCommand("cd", [str(tmp_path)])
+    cmd.execute(parsed, None, StringIO())
+    assert os.getcwd() == str(tmp_path)
+
+def test_cd_invalid_directory():
+    cmd = CdCommand()
+    parsed = MockParsedCommand("cd", ["nonexistent_directory"])
+    result = cmd.execute(parsed, None, StringIO())
+    assert result == 1
+
+def test_ls_no_argument(tmp_path):
+    os.mkdir(tmp_path / "dir1")
+    os.mkdir(tmp_path / "dir2")
+    
+    cmd = LsCommand()
+    parsed = MockParsedCommand("ls", [str(tmp_path)])
+    output = StringIO()
+    
+    result = cmd.execute(parsed, None, output)
+    content = output.getvalue()
+    
+    assert "dir1" in content
+    assert "dir2" in content
+
+
+def test_ls_with_argument(tmp_path):
+    os.mkdir(tmp_path / "dir1")
+    os.mkdir(tmp_path / "dir2")
+    cmd = LsCommand()
+    parsed = MockParsedCommand("ls", [str(tmp_path)])
+    output = StringIO()
+    result = cmd.execute(parsed, None, output)
+    content = output.getvalue()
+    assert "dir1" in content
+    assert "dir2" in content

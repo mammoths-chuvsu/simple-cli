@@ -10,6 +10,8 @@ from simple_cli.commands import (
     GrepCommand,
     PwdCommand,
     WcCommand,
+    CdCommand,
+    LsCommand,
 )
 from simple_cli.environment import Environment
 
@@ -31,6 +33,8 @@ class CommandStorage:
             "grep": GrepCommand(),
             "exit": ExitCommand(),
             "=": AssignmentCommand(env),
+            "cd": CdCommand(),
+            "ls": LsCommand(),
         }
 
     def get_command(self, name: str) -> Command:
