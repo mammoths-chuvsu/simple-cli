@@ -3,11 +3,7 @@
 import os
 import subprocess
 import sys
-import pytest
-from simple_cli.commands.cd_command import CdCommand
-from simple_cli.environment import Environment
 from io import StringIO
-from simple_cli.commands.ls_command import LsCommand
 
 import pytest
 
@@ -20,6 +16,9 @@ from simple_cli.commands import (
     PwdCommand,
     WcCommand,
 )
+from simple_cli.commands.cd_command import CdCommand
+from simple_cli.commands.ls_command import LsCommand
+from simple_cli.environment import Environment
 from simple_cli.exceptions.exit_exception import ExitError
 
 
@@ -253,7 +252,7 @@ def test_grep_after_context_exceeds_file(tmp_path, capsys):
 
 
 def test_cd_no_argument():
-    env = Environment()
+    Environment()
     cmd = CdCommand()
     parsed = MockParsedCommand("cd", [])
     cmd.execute(parsed, None, StringIO())
@@ -261,7 +260,7 @@ def test_cd_no_argument():
 
 
 def test_cd_with_argument(tmp_path):
-    env = Environment()
+    Environment()
     cmd = CdCommand()
     parsed = MockParsedCommand("cd", [str(tmp_path)])
     cmd.execute(parsed, None, StringIO())
@@ -283,7 +282,7 @@ def test_ls_no_argument(tmp_path):
     parsed = MockParsedCommand("ls", [str(tmp_path)])
     output = StringIO()
 
-    result = cmd.execute(parsed, None, output)
+    cmd.execute(parsed, None, output)
     content = output.getvalue()
 
     assert "dir1" in content
@@ -296,7 +295,7 @@ def test_ls_with_argument(tmp_path):
     cmd = LsCommand()
     parsed = MockParsedCommand("ls", [str(tmp_path)])
     output = StringIO()
-    result = cmd.execute(parsed, None, output)
+    cmd.execute(parsed, None, output)
     content = output.getvalue()
     assert "dir1" in content
     assert "dir2" in content

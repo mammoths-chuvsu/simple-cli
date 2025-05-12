@@ -1,4 +1,5 @@
 import os
+
 from simple_cli.commands.command import Command
 
 

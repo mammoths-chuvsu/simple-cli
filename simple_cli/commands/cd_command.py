@@ -1,6 +1,6 @@
 import os
+
 from simple_cli.commands.command import Command
-from simple_cli.environment import Environment
 
 
 class CdCommand(Command):

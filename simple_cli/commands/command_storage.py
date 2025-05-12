@@ -3,15 +3,15 @@
 from simple_cli.commands import (
     AssignmentCommand,
     CatCommand,
+    CdCommand,
     Command,
     DefaultCommand,
     EchoCommand,
     ExitCommand,
     GrepCommand,
+    LsCommand,
     PwdCommand,
     WcCommand,
-    CdCommand,
-    LsCommand,
 )
 from simple_cli.environment import Environment
 
