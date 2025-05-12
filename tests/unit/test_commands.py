@@ -3,6 +3,7 @@
 import os
 import subprocess
 import sys
+import tempfile
 from io import StringIO
 
 import pytest
@@ -272,6 +273,40 @@ def test_cd_invalid_directory():
     parsed = MockParsedCommand("cd", ["nonexistent_directory"])
     result = cmd.execute(parsed, None, StringIO())
     assert result == 1
+
+
+def test_cd_affects_other_commands(tmp_path):
+    cd_cmd = CdCommand()
+    parsed_cd = MockParsedCommand("cd", [str(tmp_path)])
+    cd_cmd.execute(parsed_cd, None, StringIO())
+
+    pwd_cmd = PwdCommand()
+    parsed_pwd = MockParsedCommand("pwd", [])
+    output = StringIO()
+    pwd_cmd.execute(parsed_pwd, None, output)
+    result = output.getvalue().strip()
+
+    assert result == str(tmp_path)
+
+
+def test_cd_then_default_command_sees_new_cwd(tmp_path):
+    cd_cmd = CdCommand()
+    parsed_cd = MockParsedCommand("cd", [str(tmp_path)])
+    cd_cmd.execute(parsed_cd, None, StringIO())
+
+    test_file = tmp_path / "hi.txt"
+    test_file.write_text("Hello from new dir")
+
+    cmd = DefaultCommand()
+    parsed = MockParsedCommand("cat", ["hi.txt"])
+
+    with tempfile.TemporaryFile(mode="w+", encoding="utf-8") as tmp_out:
+        result = cmd.execute(parsed, None, tmp_out)
+        tmp_out.seek(0)
+        output = tmp_out.read()
+
+    assert result == 0
+    assert "Hello from new dir" in output
 
 
 def test_ls_no_argument(tmp_path):
