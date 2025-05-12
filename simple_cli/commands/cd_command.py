@@ -1,3 +1,5 @@
+"""Implementation of the 'cd' command for changing directories."""
+
 import os
 
 from simple_cli.commands.command import Command

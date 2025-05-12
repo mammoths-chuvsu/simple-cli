@@ -1,3 +1,5 @@
+"""Implementation of the 'ls' command for listing directory contents."""
+
 import os
 
 from simple_cli.commands.command import Command
