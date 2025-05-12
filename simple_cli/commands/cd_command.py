@@ -2,15 +2,16 @@ import os
 from simple_cli.commands.command import Command
 from simple_cli.environment import Environment
 
+
 class CdCommand(Command):
     """Command implementation for changing the current directory."""
-    
+
     def execute(self, parsed_command, _stdin, _stdout) -> int:
         """Execute cd command.
-        
+
         Args:
             parsed_command: Parsed command with the directory path (if provided).
-        
+
         Returns:
             int: 0 on success, 1 on failure.
         """
@@ -24,7 +25,7 @@ class CdCommand(Command):
             else:
                 print("Usage: cd [dir]", file=_stdout)
                 return 1
-            
+
             # Attempt to change the directory
             os.chdir(target_dir)
             return 0

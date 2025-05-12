@@ -1,15 +1,16 @@
 import os
 from simple_cli.commands.command import Command
 
+
 class LsCommand(Command):
     """Command implementation for listing directory contents."""
-    
+
     def execute(self, parsed_command, _stdin, stdout) -> int:
         """Execute ls command.
-        
+
         Args:
             parsed_command: Parsed command with the directory path (if provided).
-        
+
         Returns:
             int: 0 on success, 1 on failure.
         """

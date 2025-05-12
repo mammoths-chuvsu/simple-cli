@@ -251,12 +251,14 @@ def test_grep_after_context_exceeds_file(tmp_path, capsys):
     assert exit_code == 0
     assert captured.out == "match\nline3"
 
+
 def test_cd_no_argument():
     env = Environment()
     cmd = CdCommand()
     parsed = MockParsedCommand("cd", [])
     cmd.execute(parsed, None, StringIO())
     assert os.getcwd() == os.path.expanduser("~")
+
 
 def test_cd_with_argument(tmp_path):
     env = Environment()
@@ -265,23 +267,25 @@ def test_cd_with_argument(tmp_path):
     cmd.execute(parsed, None, StringIO())
     assert os.getcwd() == str(tmp_path)
 
+
 def test_cd_invalid_directory():
     cmd = CdCommand()
     parsed = MockParsedCommand("cd", ["nonexistent_directory"])
     result = cmd.execute(parsed, None, StringIO())
     assert result == 1
 
+
 def test_ls_no_argument(tmp_path):
     os.mkdir(tmp_path / "dir1")
     os.mkdir(tmp_path / "dir2")
-    
+
     cmd = LsCommand()
     parsed = MockParsedCommand("ls", [str(tmp_path)])
     output = StringIO()
-    
+
     result = cmd.execute(parsed, None, output)
     content = output.getvalue()
-    
+
     assert "dir1" in content
     assert "dir2" in content
 

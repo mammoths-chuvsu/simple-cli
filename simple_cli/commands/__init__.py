@@ -12,7 +12,6 @@ from .wc_command import WcCommand
 from .cd_command import CdCommand
 from .ls_command import LsCommand
 
-
 __all__ = [
     "Command",
     "EchoCommand",
